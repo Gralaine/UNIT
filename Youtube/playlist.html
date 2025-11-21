@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Minha Galeria de Vídeos (YouTube)</title>
+  <style>
+    :root{
+      --bg:#0f1720;
+      --card:#0b1220;
+      --accent:#ff4d4f;
+      --muted:#9aa4b2;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,#071024 0%, #061124 100%);
+      color:#e6eef6;
+      min-height:100vh;
+    }
+    header{
+      padding:20px 24px;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    h1{
+      margin:0;
+      font-size:20px;
+    }
+    .controls{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .input-area{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    textarea,input{
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.04);
+      padding:10px;
+      border-radius:8px;
+      color:inherit;
+    }
+    button{
+      background:var(--accent);
+      border:none;
+      color:white;
+      padding:10px 12px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    button.secondary{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.06);
+    }
+    main{
+      padding:18px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:16px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));
+      border-radius:12px;
+      overflow:hidden;
+      position:relative;
+    }
+    .thumb{
+      display:block;
+      width:100%;
+      height:0;
+      padding-bottom:56.25%;
+      background-size:cover;
+      background-position:center;
+    }
+    .meta{
+      padding:12px;
+    }
+    .meta .id{
+      font-size:12px;
+      color:var(--muted);
+      word-break:break-all;
+    }
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none; /* deixa o clique passar para a thumb */
+    }
+    .play{
+      width:72px;
+      height:72px;
+      background:rgba(0,0,0,0.5);
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      /* sem pointer-events:auto; */
+    }
+    .play:after{
+      content:'';
+      display:block;
+      width:0;
+      height:0;
+      border-left:18px solid white;
+      border-top:12px solid transparent;
+      border-bottom:12px solid transparent;
+    }
+    .card .actions{
+      position:absolute;
+      right:8px;
+      top:8px;
+      display:flex;
+      gap:6px;
+    }
+    .small{
+      font-size:13px;
+      padding:8px 10px;
+    }
+    .empty{
+      padding:40px;
+      border:2px dashed rgba(255,255,255,0.03);
+      text-align:center;
+      color:var(--muted);
+      border-radius:12px;
+    }
+    footer{
+      padding:18px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    /* Modal */
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(2,6,23,0.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:50;
+    }
+    .modal.open{
+      display:flex;
+    }
+    .modal .frame{
+      width:min(1000px,calc(100% - 40px));
+      height:min(562px,70vh);
+      background:black;
+      border-radius:10px;
+      overflow:hidden;
+      position:relative;
+    }
+    .modal .close{
+      position:absolute;
+      right:8px;
+      top:8px;
+      background:rgba(255,255,255,0.06);
+      border:none;
+      color:white;
+      padding:6px 8px;
+      border-radius:6px;
+      cursor:pointer;
+      z-index:10;
+    }
+    @media (max-width:520px){
+      .controls{
+        flex-direction:column;
+        align-items:stretch;
+      }
+      textarea{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Minha Galeria de Vídeos — YouTube</h1>
+      <div style="color:var(--muted);font-size:13px">
+        Cole URLs do YouTube ou IDs (um por linha) e clique em "Adicionar"
+      </div>
+    </div>
+    <div class="controls">
+      <div class="input-area">
+        <textarea id="inputVideos" rows="2"
+          placeholder="https://www.youtube.com/watch?v=5y28nN-QpH0&#10;ou apenas: 5y28nN-QpH0"
+          style="min-width:320px"></textarea>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button id="btnAdd">Adicionar</button>
+          <button class="secondary" id="btnClear">Limpar tudo</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="gallery" class="grid"></div>
+    <div id="empty" class="empty" style="display:none">
+      Nenhum vídeo adicionado ainda — cole URLs/IDs e clique em "Adicionar".
+    </div>
+  </main>
+
+  <footer>
+    Dica: a lista de vídeos fica salva no seu navegador (localStorage).  
+    Para adicionar mais, cole o link ou ID e clique em "Adicionar".
+  </footer>
+
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="frame">
+      <button class="close" id="closeModal">Fechar ✕</button>
+      <iframe id="player" width="100%" height="100%" src=""
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Util: extrai ID de uma URL ou retorna o próprio texto caso já seja ID
+    function extractYouTubeID(text){
+      if(!text) return null;
+      const trimmed = text.trim();
+      const patterns = [
+        /(?:youtube\.com\/(?:watch\?.*v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{6,20})/, // urls
+        /([a-zA-Z0-9_-]{6,20})/ // fallback id-like
+      ];
+      for(const p of patterns){
+        const m = trimmed.match(p);
+        if(m && m[1]) return m[1];
+      }
+      return null;
+    }
+
+    // State — começa já com o seu vídeo
+    let videos = JSON.parse(localStorage.getItem('yt_videos') || '["5y28nN-QpH0"]');
+
+    const gallery   = document.getElementById('gallery');
+    const empty     = document.getElementById('empty');
+    const input     = document.getElementById('inputVideos');
+    const btnAdd    = document.getElementById('btnAdd');
+    const btnClear  = document.getElementById('btnClear');
+    const modal     = document.getElementById('modal');
+    const player    = document.getElementById('player');
+    const closeModal= document.getElementById('closeModal');
+
+    function save(){
+      localStorage.setItem('yt_videos', JSON.stringify(videos));
+    }
+
+    function render(){
+      gallery.innerHTML = '';
+      if(videos.length === 0){
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      videos.forEach((id, idx) => {
+        const card = document.createElement('div');
+        card.className='card';
+        card.draggable = true;
+
+        const thumb = document.createElement('a');
+        thumb.className='thumb';
+        thumb.href='#';
+        thumb.dataset.id = id;
+        thumb.style.backgroundImage = `url(https://img.youtube.com/vi/${id}/hqdefault.jpg)`;
+        thumb.addEventListener('click', (e)=>{
+          e.preventDefault();
+          openModal(id);
+        });
+
+        const overlay = document.createElement('div');
+        overlay.className='overlay';
+
+        const play = document.createElement('div');
+        play.className='play';
+        play.title='Reproduzir';
+        // clique no play também abre o vídeo
+        play.addEventListener('click', (e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          openModal(id);
+        });
+
+        overlay.appendChild(play);
+
+        const meta = document.createElement('div');
+        meta.className='meta';
+
+        const metaId = document.createElement('div');
+        metaId.className='id';
+        metaId.textContent = id;
+
+        const actions = document.createElement('div');
+        actions.className='actions';
+
+        const btnRemove = document.createElement('button');
+        btnRemove.className='small';
+        btnRemove.textContent='Remover';
+        btnRemove.addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          removeVideo(idx);
+        });
+
+        const btnCopy = document.createElement('button');
+        btnCopy.className='small';
+        btnCopy.textContent='Copiar embed';
+        btnCopy.addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          copyEmbed(id);
+        });
+
+        actions.appendChild(btnCopy);
+        actions.appendChild(btnRemove);
+
+        card.appendChild(thumb);
+        card.appendChild(overlay);
+        card.appendChild(actions);
+        meta.appendChild(metaId);
+        card.appendChild(meta);
+
+        gallery.appendChild(card);
+      });
+    }
+
+    function addFromInput(){
+      const lines = input.value
+        .split(/\n|,|;/)
+        .map(s=>s.trim())
+        .filter(Boolean);
+
+      let added = 0;
+      for(const line of lines){
+        const id = extractYouTubeID(line);
+        if(id && !videos.includes(id)){
+          videos.push(id);
+          added++;
+        }
+      }
+      if(added>0){
+        save();
+        render();
+        input.value = '';
+      }
+      alert(added + ' vídeo(s) adicionados.');
+    }
+
+    function removeVideo(index){
+      if(!confirm('Remover este vídeo da galeria?')) return;
+      videos.splice(index,1);
+      save();
+      render();
+    }
+
+    function copyEmbed(id){
+      const code =
+        `<iframe width="560" height="315" src="https://www.youtube.com/embed/${id}" ` +
+        `frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; ` +
+        `gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+      navigator.clipboard.writeText(code)
+        .then(()=> alert('Código de embed copiado!'))
+        .catch(()=> alert('Não foi possível copiar automaticamente. Cole manualmente.'));
+    }
+
+    function openModal(id){
+      player.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+    }
+    function closeModalFn(){
+      player.src='';
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    }
+
+    btnAdd.addEventListener('click', addFromInput);
+    btnClear.addEventListener('click', ()=>{
+      if(confirm('Remover TODAS as entradas?')){
+        videos=[];
+        save();
+        render();
+      }
+    });
+    closeModal.addEventListener('click', closeModalFn);
+    modal.addEventListener('click', (e)=>{
+      if(e.target===modal) closeModalFn();
+    });
+
+    // drag and drop simples para reordenar
+    let dragIdx = null;
+    document.addEventListener('dragstart', (e)=>{
+      const el = e.target.closest('.card');
+      if(!el) return;
+      dragIdx = Array.from(gallery.children).indexOf(el);
+      e.dataTransfer.setData('text/plain','drag');
+    });
+    document.addEventListener('dragover', (e)=>{ e.preventDefault(); });
+    document.addEventListener('drop', (e)=>{
+      const el = e.target.closest('.card');
+      if(!el || dragIdx===null) return;
+      const dropIdx = Array.from(gallery.children).indexOf(el);
+      const [moved] = videos.splice(dragIdx,1);
+      videos.splice(dropIdx,0,moved);
+      save();
+      render();
+      dragIdx=null;
+    });
+
+    // inicia a página
+    render();
+  </script>
+</body>
+</html>
