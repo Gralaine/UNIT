@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>All Blu Academy - Cards</title>
+  <style>
+    :root{
+      --bg-img: url("/mnt/data/A_digital_illustration_in_a_futuristic,_cyberpunk_.png");
+      --card-bg: rgba(10,12,20,0.75);
+      --accent: #00e5ff;
+      --accent-2: #ff00dd;
+      --glass: rgba(255,255,255,0.03);
+      --radius: 12px;
+      --gap: 18px;
+      --max-width: 1100px;
+      --text: #e6eef6;
+      --muted: #c6d3e6;
+      font-family: Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background-image: var(--bg-img);
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      padding:48px 20px;
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      backdrop-filter: blur(6px);
+    }
+
+    .cards-wrap{
+      width:100%;
+      max-width:var(--max-width);
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:var(--gap);
+      align-items:stretch;
+      background: linear-gradient(180deg, rgba(8,8,12,0.28), rgba(4,4,8,0.48));
+      padding:22px;
+      border-radius:16px;
+      box-shadow: 0 10px 30px rgba(2,4,8,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+
+    @media (max-width:800px){
+      .cards-wrap{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: linear-gradient(135deg, var(--card-bg), var(--glass));
+      border: 1px solid rgba(255,255,255,0.04);
+      padding:18px;
+      border-radius:var(--radius);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height:170px;
+    }
+
+    .card::before{
+      content:"";
+      height:4px;
+      width:48px;
+      border-radius:4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 6px 18px rgba(0,229,255,0.08);
+      display:block;
+    }
+
+    .card-title{
+      font-weight:700;
+      letter-spacing:0.6px;
+      font-size:1.05rem;
+      margin:0;
+      color:var(--text);
+    }
+
+    .card-sub{
+      font-size:0.82rem;
+      color:var(--muted);
+      margin:0;
+      line-height:1.35;
+    }
+
+    .card-text{
+      font-size:0.95rem;
+      color:var(--text);
+      margin-top:4px;
+      line-height:1.5;
+      flex:1;
+    }
+
+    .badge-list{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .badge{
+      font-size:0.78rem;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.03);
+      color:var(--muted);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    /* Small decorative footer */
+    .card-footer{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      font-size:0.82rem;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="cards-wrap" role="region" aria-label="Descrição Projeto Grãlaine">
+    <!-- Card 1: Definição -->
+    <article class="card" aria-labelledby="title-1">
+      <h3 id="title-1" class="card-title">Projeto Grãlaine</h3>
+      <p class="card-sub">Plataforma de aprendizado para iniciantes e intermediários</p>
+      <p class="card-text">
+        O Projeto Grãlaine é uma plataforma focada em programação, tecnologia e inteligência artificial.
+        Oferecemos trilhas práticas em automação, marketing digital e criação de projetos com IA e código,design, 
+        unindo criatividade e técnica para transformar ideias em soluções reais.
+      </p>
+      <div class="card-footer">
+        <span>Foco: autonomia e aplicabilidade</span>
+        <span>Formato: hands-on</span>
+      </div>
+    </article>
+
+    <!-- Card 2: Propósito e benefícios -->
+    <article class="card" aria-labelledby="title-2">
+      <h3 id="title-2" class="card-title">Propósito e benefícios</h3>
+      <p class="card-sub">Capacitar criadores, programadores e empreendedores</p>
+      <p class="card-text">
+        Capacitação prática para desenvolver projetos com automação e IA aplicada.
+        Ambiente pensado para quem quer aprender a construir produtos digitais, ganhar autonomia
+         e lançar projetos com impacto.
+      </p>
+
+      <div class="badge-list" aria-hidden="false">
+        <span class="badge">Programação</span>
+        <span class="badge">IA aplicada</span>
+        <span class="badge">Automação</span>
+        <span class="badge">Empreendedorismo digital</span>
+      </div>
+    </article>
+  </main>
+</body>
+</html>
